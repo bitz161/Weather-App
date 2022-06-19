@@ -36,7 +36,6 @@ btn.addEventListener("click", (e) => {
     alert("Please type in a city name");
   } else {
     cityInput = form.value;
-    console.log(cityInput);
     //fetch data from API
     fetchWeatherData();
     form.value = "";
@@ -68,7 +67,6 @@ function fetchWeatherData() {
   )
     .then((response) => response.json())
     .then((data) => {
-      console.log(data);
       temp.innerHTML = data.current.temp_c + "&#176";
       conditionOutput.innerHTML = data.current.condition.text;
 
