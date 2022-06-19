@@ -1,5 +1,5 @@
 //get all elemets from the DOM
-const app = document.querySelector(".weather.app");
+const app = document.querySelector(".weather-app");
 const temp = document.querySelector(".temp");
 const dateOutput = document.querySelector(".date");
 const timeOutput = document.querySelector(".time");
@@ -29,18 +29,19 @@ cities.forEach((city) => {
 });
 
 //add submit event to the form
-form.addEventListener("submit", (e) => {
+btn.addEventListener("click", (e) => {
+  e.preventDefault();
   //if the input field (search bar) is empty, throw an alert
-  if (search.value.lenght == 0) {
+  if (form.value == "") {
     alert("Please type in a city name");
   } else {
-    cityInput = search.value;
+    cityInput = form.value;
+    console.log(cityInput);
     //fetch data from API
     fetchWeatherData();
-    search.value = "";
+    form.value = "";
     app.style.opacity = "0";
   }
-  e.preventDefault();
 });
 
 //funtion that returns a day of the week
@@ -68,7 +69,6 @@ function fetchWeatherData() {
     .then((response) => response.json())
     .then((data) => {
       console.log(data);
-
       temp.innerHTML = data.current.temp_c + "&#176";
       conditionOutput.innerHTML = data.current.condition.text;
 
@@ -100,5 +100,82 @@ function fetchWeatherData() {
       let timeOfDay = "day";
       //Get the unique id for each weather condition
       const code = data.current.condition.code;
+
+      //change to night if its night time in the city
+      if (!data.current.is_day) {
+        timeOfDay = "night";
+      }
+      if (code == 1000) {
+        //Set the background image to clear if the weather is clear
+        app.style.backgroundImage = `url(./assets/imgs/${timeOfDay}/clear.jpg)`;
+        //change the button bg color depending on its day or night
+        btn.style.background = "#e5ba92";
+        if (timeOfDay == "night") {
+          btn.style.background = "#e181e27";
+        }
+      } else if (
+        code == 1003 ||
+        code == 1006 ||
+        code == 1009 ||
+        code == 1030 ||
+        code == 1069 ||
+        code == 1087 ||
+        code == 1135 ||
+        code == 1279 ||
+        code == 1282
+      ) {
+        console.log(code);
+        app.style.backgroundImage = `url(./assets/imgs/${timeOfDay}/cloudy.jpg)`;
+        btn.style.background = "#efa6d1b";
+        if (timeOfDay == "night") {
+          btn.style.background = "#181e27";
+        }
+      } else if (
+        code == 1063 ||
+        code == 1069 ||
+        code == 1072 ||
+        code == 1150 ||
+        code == 1153 ||
+        code == 1180 ||
+        code == 1183 ||
+        code == 1186 ||
+        code == 1189 ||
+        code == 1192 ||
+        code == 1195 ||
+        code == 1204 ||
+        code == 1207 ||
+        code == 1240 ||
+        code == 1243 ||
+        code == 1246 ||
+        code == 1249 ||
+        code == 1252 ||
+        code == 1276 ||
+        code == 1273
+      ) {
+        app.style.backgroundImage = `url(./assets/imgs/${timeOfDay}/rainy.jpg)`;
+        btn.style.background = "#647d75";
+        if (timeOfDay == "night") {
+          btn.style.background = "#325c80";
+        }
+      } else {
+        app.style.backgroundImage = `url(./assets/imgs/${timeOfDay}/snowy.jpg)`;
+        btn.style.background = "#4d72aa";
+        if (timeOfDay == "night") {
+          btn.style.background = "#1b1b1b";
+        }
+      }
+      //face in the page once all is done
+      app.style.opacity = "1";
+    })
+
+    .catch(() => {
+      alert("City not found, please try again");
+      app.style.opacity = "1";
     });
 }
+
+//Call the function on page load
+fetchWeatherData();
+
+//fade in the page
+app.style.opacity = "1";
